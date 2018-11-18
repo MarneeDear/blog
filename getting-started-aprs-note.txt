@@ -1,0 +1,124 @@
+setup el cheapo radios to send and receive aprs
+setup baofeng to send and receive aprs
+baofeng setting VOX  and set it to 1 (remember to turn off vox when the tnc2 is not plugged in or you will be transmitting all the time ) dont know if vox was necessary
+but we were probably just using the wrong channel
+make sure that the boufeng is pointing to the right frequency a/b
+
+there should be a way to activate the transmission without using vox
+
+with the el cheapo the squelch has to be open or it wont receive in time 
+we may need to program them to keep it open all the time
+because the squelch opens too slowly to get the entire signal
+
+hooking it up with raspberrypi and fldigi
+now you have a mobile system that can store and forward messages
+
+Could evne be a really simple mesh network for store and forward and messaging
+
+then you can link this up with the city wide mesh network
+and get messaging through the broadband
+
+NEXT step
+figure out how to use secure scuttlebutt to send secure messages over aprs
+
+inspiration is Airchat
+
+Remember to make an addendum to previous post and talk about the SSID on 
+the WAP
+
+direwolf plus secure scuttlebutt
+
+https://scuttlebot.io/
+
+https://github.com/wb2osz/direwolf
+
+**************
+
+aprs data format
+http://aprs.net/vm/DOS/PROTOCOL.HTM
+
+
+
+QUERIES:  THere are two types of APRS Queries.  One is general to all
+stations and the other is in a message format to a single station:
+
+
+
+  ?APRS?                    Queries all stations (respond in 2 mins)
+  ?APRS?LLLLLL,OOOOOO,RRRR  Queries a radius around a LAT/LONG point
+                            If RRR is less than 8 then respond immediately
+  ?WX?                      Queries all WX stations
+  W3ABC____:?APRS?          Queries just W3ABC  (all of his data)
+  W3ABC____:?APRSP          Queries for  W3ABC's Posit
+  W3ABC____:?APRSS          Queries for  W3ABC's Status
+  W3ABC____:?APRSM          Queries for  W3ABC's messages
+  W3ABC____:?APRSO          Queries for  W3ABC's Objects
+  W3ABC____:?APRSD          Queries for stations heard DIRECT by W3ABC
+  W3ABC____:?APRSH W4XYZ    Queries to see if W3ABC has heard W4XYZ
+                            W3ABC sends back a packet with W4XYZ as an OBJ
+                            and sends back a message with the number of
+                            packets heard per hour from him.
+
+
+Ax.25 and aprs
+
+aprs data format and field sizes
+theoretical limits to how much you can send in a packet over vhf and still get reliable data even with FEC
+how many nodes can you have before APRS becomes impractical (too noisy or too crowded)
+does combining scuttlebutt with aprs query mean you can theoretically have more conversations because you are not 
+indesciminately broadcasting?
+get a good understanding of the limitations of ax25/fx25 and aprs
+look into amprnet
+high level data link control HDLC v KISS is it relevant to what we are doing?
+What alternaticves ae there like packet radio or digital modes? 
+what is the relationship between packet radio and ax25? can you do packet radio without ax25, some otehr protocol?
+Where does AX.25 stop and APRS begin?
+Which frequencies in 2m and 70cm in the band plan are dedicated to data (packet) _other_ than 144.390 (APRS)? Potential
+    for point-to-point communication of data not suitable for APRS, but can negotiate as side-channels _via_ APRS first. 
+can you expose a webservice over bluetooth instad of wifi?
+FInd out more about the aprs query message.
+
+
+Check if direwolf can do fx25
+what else is it capable of?
+
+Pi zero/ orange pi radios
+software modem on tiny computer
+make them igates too 
+(over wifi as well as using a connected cell phone that has a data connection as well as to the AREDN mesh)
+can you hack the firmware to transmit over the ham wifi 
+
+
+
+setup a digipeater and an igate
+remember proportional pathing
+http://www.aprs.org/newN/ProportionalPathing.txt
+
+can we make these things talk to the satellites?
+
+https://en.wikipedia.org/wiki/AX.25
+https://en.wikipedia.org/wiki/Packet_radio
+https://en.wikipedia.org/wiki/Automatic_Packet_Reporting_System
+http://www.aprs.org/newN/ProportionalPathing.txt
+https://en.wikipedia.org/wiki/APRS_Calling
+https://en.wikipedia.org/wiki/KISS_(TNC)
+https://en.wikipedia.org/wiki/FX.25_Forward_Error_Correction
+https://en.wikipedia.org/wiki/Carrier-sense_multiple_access
+https://en.wikipedia.org/wiki/AMPRNet
+https://en.wikipedia.org/wiki/High-Level_Data_Link_Control
+https://en.wikipedia.org/wiki/Multi-Use_Radio_Service
+https://en.wikipedia.org/wiki/Family_Radio_Service
+https://en.wikipedia.org/wiki/Duplex_(telecommunications)
+
+
+CODEz
+https://github.com/bradsjm/HamAprsParser/tree/master/HamAprsParser
+https://github.com/Boerman/Boerman.AprsClient
+https://github.com/ampledata/kiss
+python
+https://github.com/ampledata/aprs
+https://github.com/rossengeorgiev/aprs-python
+https://github.com/asdil12/pymultimonaprs
+
+The protocol
+http://info.aprs.net/index.php?title=Protocol
