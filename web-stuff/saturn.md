@@ -8,14 +8,16 @@ You can find all of my sample code on my [Github](https://github.com/MarneeDear/
 
 ## Why am I doing this?
 
-At the [University of Arizona, College of Medicine - Tucson](https://medicine.arizona.edu/) we build a lot of web apps. As the Applications Architect I have tried to use as much F# as possible, but we usually ended up with a hybrid of F# and C#. This looked like F# for Core and Infrastructure, and C# for the web host on .NET MVC. THis worked great but it is not F#, or functional programming, all the way through. But we don't have to do that anymore now that we have F# web frameworks like [Giraffe](https://github.com/giraffe-fsharp/Giraffe) and [Saturn](https://saturnframework.org/). I decided to try out Saturn to see if we can't start building 100% F# apps.
+> I decided to try out Saturn to see if we can't start building 100% F# web apps.
+
+At the [University of Arizona, College of Medicine - Tucson](https://medicine.arizona.edu/) we build a lot of web apps. As the Applications Architect I have tried to use as much F# as possible, but we usually ended up with a hybrid of F# and C#. This looked like F# for Core and Infrastructure, and C# for the web host on .NET MVC. This worked great but it is not F#, or functional programming, all the way through. But we don't have to do that anymore now that we have F# web frameworks like [Giraffe](https://github.com/giraffe-fsharp/Giraffe) and [Saturn](https://saturnframework.org/).
 
 ## A little about Saturn
 
 There are a lot of great things to like about Saturn.
 
 * Easy to scaffold with the .NET SDK
-* Built on ASP.NET Core, Giraffe and Kestrel.
+* Built on ASP.NET Core, Giraffe and Kestrel, so it is cross-platform.
 * A number of [useful sample apps](https://github.com/SaturnFramework/Saturn/tree/master/sample).
 * Useful extensions and abstractions for things like OAuth and Azure Functions.
 * Supports .NET Core and .NET Standard.
@@ -57,7 +59,7 @@ Did you mean to run dotnet SDK commands? Please install dotnet SDK from:
 
 > Pro Tip: Be careful with dashes in names. By default, `dotnet` will name your project according to the folder in which it is contained, but it converts dashes to underscores, which throws off file paths. You might see an error that looks like this: 
 
-```
+```text
 System.Exception: Start of process dotnet failed. WorkingDir C:\Users\Marnee\Dropbox\github\saturn-stuff\saturn-blog\src\saturn_blog\ does not exist.
 ```
 
