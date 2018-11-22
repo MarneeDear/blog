@@ -4,7 +4,7 @@ Lessons learned building a web application built on Saturn and using CAS for sin
 
 ## Sample code
 
-You can find all of my sample code on my [Github](https://github.com/MarneeDear/saturn-onion-template).
+You can find all of my sample code on my [Github](https://github.com/MarneeDear/saturn-example).
 
 ## Why am I doing this?
 
@@ -57,11 +57,42 @@ Did you mean to run dotnet SDK commands? Please install dotnet SDK from:
   http://go.microsoft.com/fwlink/?LinkID=798306&clcid=0x409
 ```
 
-> Pro Tip: Be careful with dashes in names. By default, `dotnet` will name your project according to the folder in which it is contained, but it converts dashes to underscores, which throws off file paths. You might see an error that looks like this: 
+> Pro Tip: Be careful with dashes in names. By default, `dotnet` will name your project according to the folder in which it is contained, but it converts dashes to underscores, which throws off file paths. You might see an error that looks like this:
 
 ```text
 System.Exception: Start of process dotnet failed. WorkingDir C:\Users\Marnee\Dropbox\github\saturn-stuff\saturn-blog\src\saturn_blog\ does not exist.
 ```
 
-## The big parts
+## My project (saturn-example)
 
+Here is what you get from my [repo on Github](https://github.com/MarneeDear/saturn-example):
+
+* [CAS](https://en.wikipedia.org/wiki/Central_Authentication_Service) integration for single-sign-on. This is similar to OAuth and uses [this CAS library](https://www.nuget.org/packages/AspNetCore.Security.CAS) from [Indiana University Foundation](https://github.com/iuCrimson/aspnet.security.cas).
+* A simple [Onion Architecture](https://www.c-sharpcorner.com/UploadFile/dhananjaycoder/step-by-step-implementing-onion-architecture-in-Asp-Net-mvc/) example. There is a Core library where you put your models, and Infrastructure where you put your business logic and data access.
+* Test projects using [xUnit](https://xunit.github.io/) and [FsUnit](https://fsprojects.github.io/FsUnit/xUnit.html).
+
+### CAS Single-Sign-On (Authentication)
+
+Saturn doesn't have built-in CAS support, but it does have OAuth with GitHub, Google, and custom providers, which is great, but I need CAS, so I had to integrate it myself. This turned out to be pretty easy because I found a compatible [CAS auth library](https://github.com/iuCrimson/aspnet.security.cas) available on Nuget, which meant I could install wit with `paket`.
+
+Once imported, I could implement it by creating a new `ApplicationBuilder` with a new `CustomOperation` method. This will make it so I can use it in the [`application` computation expression](https://github.com/SaturnFramework/Saturn/blob/master/src/Saturn/Application.fs).
+
+```fsharp
+module CAS
+
+open Saturn
+open Microsoft.Extensions.DependencyInjection
+open Microsoft.AspNetCore.Builder
+open Microsoft.AspNetCore.Authentication.Cookies
+open Microsoft.AspNetCore.Authentication
+open AspNetCore.Security.CAS
+
+type ApplicationBuilder with
+    //Enables CAS authentication
+    //Uses https://github.com/IUCrimson/AspNet.Security.CAS
+    [<CustomOperation("use_cas_with_options")>]
+    member __.UseCasAuthentication(state: ApplicationState, casServerUrlBase) =
+:
+:
+:
+```
