@@ -8,7 +8,7 @@ You can find all of my sample code on my [Github](https://github.com/MarneeDear/
 
 ## Why am I doing this?
 
-> I decided to try out Saturn to see if we can't start building 100% F# web apps.
+> I decided to try out Saturn to see if we can't start building 100% F# web apps. But first I needed to make CAS work.
 
 At the [University of Arizona, College of Medicine - Tucson](https://medicine.arizona.edu/) we build a lot of web apps. As the Applications Architect I have tried to use as much F# as possible, but we usually ended up with a hybrid of F# and C#. This looked like F# for Core and Infrastructure, and C# for the web host on .NET MVC. This worked great but it is not F#, or functional programming, all the way through. But we don't have to do that anymore now that we have F# web frameworks like [Giraffe](https://github.com/giraffe-fsharp/Giraffe) and [Saturn](https://saturnframework.org/).
 
@@ -75,7 +75,7 @@ Here is what you get from my [repo on Github](https://github.com/MarneeDear/satu
 
 Saturn doesn't have built-in CAS support, but it does have OAuth with GitHub, Google, and custom providers, which is great, but I need CAS, so I had to integrate it myself. This turned out to be pretty easy because I found a compatible [CAS auth library](https://github.com/iuCrimson/aspnet.security.cas) available on Nuget, which meant I could install wit with `paket`.
 
-Once imported, I could implement it by creating a new `ApplicationBuilder` with a new `CustomOperation` method. This will make it so I can use it in the [`application` computation expression](https://github.com/SaturnFramework/Saturn/blob/master/src/Saturn/Application.fs).
+Once imported, I could implement it by creating a new module with an`ApplicationBuilder` class with a new `CustomOperation` method. This will make it so I can use it in the [`application` computation expression](https://github.com/SaturnFramework/Saturn/blob/master/src/Saturn/Application.fs).
 
 ```fsharp
 module CAS
@@ -90,9 +90,39 @@ open AspNetCore.Security.CAS
 type ApplicationBuilder with
     //Enables CAS authentication
     //Uses https://github.com/IUCrimson/AspNet.Security.CAS
-    [<CustomOperation("use_cas_with_options")>]
+    [<CustomOperation("use_cas")>]
     member __.UseCasAuthentication(state: ApplicationState, casServerUrlBase) =
 :
 :
 :
 ```
+
+And then we can use it in our application like this. In Program.fs, the entry point of the app we do this.
+
+```fsharp
+let app = application {
+    pipe_through endpointPipe
+    error_handler (fun ex _ -> pipeline { render_html (InternalError.layout ex) })
+    use_router Router.appRouter
+    url "http://saturn.local:8085/"
+    memory_cache
+    use_static "static"
+    use_gzip
+    use_config (fun _ -> {connectionString = "DataSource=database.sqlite"} ) 
+    use_iis
+    use_cas "https://webauth.arizona.edu/webauth"
+}
+```
+
+You can see the full source code on my GitHub repo:
+
+* The entry point [Program.fs](https://github.com/MarneeDear/saturn-example/blob/master/src/Template.Saturn.WebHost/Program.fs)
+* The CAS implementation [Cas.fs](https://github.com/MarneeDear/saturn-example/blob/master/src/Template.Saturn.WebHost/Authentication/Cas.fs)
+
+### The CAS implementation
+
+`use_cas` takes two arguments:
+
+* `casServerUrlBase` -- your CAS servers authentication URL. In my case I am using my University's CAS server known as `webauth`.
+* `state` -- `ApplicationState` defined in Saturn [here](https://github.com/SaturnFramework/Saturn/blob/master/src/Saturn/Application.fs). In the `application` computation expression, the state is automatically passed to the method.
+
