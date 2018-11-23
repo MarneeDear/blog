@@ -14,6 +14,9 @@ At the [University of Arizona, College of Medicine - Tucson](https://medicine.ar
 
 ## A little about Saturn
 
+
+![Alt text](https://saturnframework.org/assets/img/logo.png)
+
 There are a lot of great things to like about Saturn.
 
 * Easy to scaffold with the .NET SDK
@@ -123,6 +126,6 @@ You can see the full source code on my GitHub repo:
 
 `use_cas` takes two arguments:
 
-* `casServerUrlBase` -- your CAS servers authentication URL. In my case I am using my University's CAS server known as `webauth`.
+* `casServerUrlBase` -- your CAS server's authentication URL. In my case I am using my University's CAS server known as `webauth`.
 * `state` -- `ApplicationState` defined in Saturn [here](https://github.com/SaturnFramework/Saturn/blob/master/src/Saturn/Application.fs). In the `application` computation expression, the state is automatically passed to the method.
 
