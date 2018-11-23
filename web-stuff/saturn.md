@@ -99,7 +99,7 @@ type ApplicationBuilder with
 :
 ```
 
-And then we can use it in our application like this. In Program.fs, the entry point of the app, we do this.
+And then we can use it in our application. In Program.fs, the entry point of the app, we do this.
 
 ```fsharp
 let app = application {
