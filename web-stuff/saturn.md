@@ -75,7 +75,7 @@ Here is what you get from my [repo on Github](https://github.com/MarneeDear/satu
 
 ### CAS Single-Sign-On (Authentication)
 
-Saturn doesn't have built-in CAS support, but it does have OAuth with GitHub, Google, and custom providers, which is great, but I need CAS, so I had to integrate it myself. This turned out to be pretty easy because I found a compatible [CAS auth library](https://github.com/iuCrimson/aspnet.security.cas) available on Nuget, which meant I could install wit with `paket`.
+Saturn doesn't have built-in CAS support, but it does have OAuth with GitHub, Google, and custom providers, which is great, but I need CAS, so I had to integrate it myself. This turned out to be pretty easy because I found a compatible [CAS auth library](https://github.com/iuCrimson/aspnet.security.cas) available on Nuget, which meant I could install it with `paket`.
 
 Once imported, I could implement it by creating a new module with an`ApplicationBuilder` class with a new `CustomOperation` method. This will make it so I can use it in the [`application` computation expression](https://saturnframework.org/docs/api/application/#application-builder).
 
