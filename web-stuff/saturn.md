@@ -254,7 +254,7 @@ let layout ctx =
 
 I need to figure out these things:
 
-* What am I going to use for authorization? Do I want to build a sample-app that also uses [ASP.NET Core Identity](https://docs.microsoft.com/en-us/aspnet/core/security/authentication/identity?view=aspnetcore-2.1&tabs=visual-studio)? Maybe I'll roll my own with EDS/Grouper for claims and membership and a simple database to assign roles and privileges, like I have in previous projects.
+* What am I going to use for authorization? Do I want to build a sample-app that also uses [ASP.NET Core Identity](https://docs.microsoft.com/en-us/aspnet/core/security/authentication/identity?view=aspnetcore-2.1&tabs=visual-studio)? Maybe I'll roll my own with EDS/Grouper for claims and membership, and a simple database to assign roles and privileges, like I have in previous projects.
 * Figure out how to restrict access to controllers and views like I do with the [`Authorize` attribute](https://stackoverflow.com/questions/10848086/authorize-attribute-in-asp-net-mvc#10848142) in .NET MVC or .NET Web API 2.0. I suspect I will have to fig into Giraffe for this.
 
 ## Final thoughts
