@@ -250,6 +250,6 @@ let layout ctx =
 
 ## Final thoughts
 
-![I'm trying](http://www.memeologist.com/wp-content/uploads/2017/05/25074d69a2658f5d354bc03890b47fd7.jpg?67ef12)
-
 Working with Saturn was a bit painful at first as I was trying to learn the abstractions and `opinions`, but eventually it all just made a lot of sense and it is pretty easy to work with. Try it out!
+
+![Aha!](https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/hostedimages/1381270478i/4622285.jpg)
