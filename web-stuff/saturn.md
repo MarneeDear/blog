@@ -14,7 +14,6 @@ At the [University of Arizona, College of Medicine - Tucson](https://medicine.ar
 
 ## A little about Saturn
 
-
 ![Alt text](https://saturnframework.org/assets/img/logo.png)
 
 There are a lot of great things to like about Saturn.
@@ -48,7 +47,7 @@ We use these, and combinations of them, to build the wider application architect
 
 Follow the documentation [here](https://saturnframework.org/docs/guides/how-to-start/).
 
-Make sure you have the [.NET SDK and .NET Runtime](https://www.microsoft.com/net/download) installed.
+> Pro Tip: Make sure you have the [.NET SDK and .NET Runtime](https://www.microsoft.com/net/download) installed.
 
 As of 2018-11-18, the project template requires .NET SDK version `2.1.300`. So after creating the project, check `global.json` for the version and either change it to the version you have installed or install the version in `global.json`. You can install multiple versions at one time (older versions can be found at the download link above).
 
@@ -78,7 +77,7 @@ Here is what you get from my [repo on Github](https://github.com/MarneeDear/satu
 
 Saturn doesn't have built-in CAS support, but it does have OAuth with GitHub, Google, and custom providers, which is great, but I need CAS, so I had to integrate it myself. This turned out to be pretty easy because I found a compatible [CAS auth library](https://github.com/iuCrimson/aspnet.security.cas) available on Nuget, which meant I could install wit with `paket`.
 
-Once imported, I could implement it by creating a new module with an`ApplicationBuilder` class with a new `CustomOperation` method. This will make it so I can use it in the [`application` computation expression](https://github.com/SaturnFramework/Saturn/blob/master/src/Saturn/Application.fs).
+Once imported, I could implement it by creating a new module with an`ApplicationBuilder` class with a new `CustomOperation` method. This will make it so I can use it in the [`application` computation expression](https://saturnframework.org/docs/api/application/#application-builder).
 
 ```fsharp
 module CAS
@@ -124,8 +123,133 @@ You can see the full source code on my GitHub repo:
 
 ### The CAS implementation
 
+I followed the pattern used in the Saturn OAuth implementations.
+
 `use_cas` takes two arguments:
 
 * `casServerUrlBase` -- your CAS server's authentication URL. In my case I am using my University's CAS server known as `webauth`.
 * `state` -- `ApplicationState` defined in Saturn [here](https://github.com/SaturnFramework/Saturn/blob/master/src/Saturn/Application.fs). In the `application` computation expression, the state is automatically passed to the method.
 
+What we want to end up with in `UseCasAuthentication` is a new state with the CAS authentication configuration added to the old state.
+
+I defined a middleware function in which I enabled [`UseAuthentication`](https://docs.microsoft.com/tr-tr/dotnet/api/microsoft.aspnetcore.builder.authappbuilderextensions.useauthentication?view=aspnetcore-2.0#Microsoft_AspNetCore_Builder_AuthAppBuilderExtensions_UseAuthentication_Microsoft_AspNetCore_Builder_IApplicationBuilder_).
+
+```fsharp
+  let middleware (app : IApplicationBuilder) =
+    app.UseAuthentication()
+```
+
+I defined a service function which configures the CAS authentication by following the guide to the [CAS library](https://github.com/iuCrimson/aspnet.security.cas).
+
+```fsharp
+  let service (s : IServiceCollection) =
+    let c = s.AddAuthentication(fun cfg ->
+      cfg.DefaultScheme <- CookieAuthenticationDefaults.AuthenticationScheme
+      cfg.DefaultChallengeScheme <- "CAS"
+      )
+    addCookie state c
+    c.AddCAS(fun o -> 
+        o.CasServerUrlBase <- casServerUrlBase
+        o.SignInScheme <- CookieAuthenticationDefaults.AuthenticationScheme
+        )
+    |> ignore
+    s
+```
+
+Here I configured the default scheme and gave the Challenge Scheme a name (`CAS`). Later, when I want to do a login, I can have the Giraffe Auth challenge to use `CAS` like this:
+
+```fsharp
+  (Giraffe.Auth.challenge "CAS")
+```
+
+I also configure the `CAS` server URL and the Authentication Scheme.
+
+Finally I return a new state with all of the configurations added. Like this:
+
+```fsharp
+  { state with
+      ServicesConfig = service::state.ServicesConfig
+      AppConfigs = middleware::state.AppConfigs
+      CookiesAlreadyAdded = true
+  }
+```
+
+## Make the login work
+
+Ok, great, we have added CAS authentication, but how do I login? I need a login button and to add some security that restricts access to resources. We do this with the [`router`](https://saturnframework.org/docs/api/scope/) and [`pipeline`](https://saturnframework.org/docs/api/pipeline/) computation expressions.
+
+> Note: Router in the Saturn user guide is a outdated. It still references `scope`, which was deprecated in favor of `router`. I did a pull request to update this in the source files, but as of 11/23/2018 the published guide has not been updated.
+
+Router defines paths and routes through your application. It has a lot in common with [.NET MVC routing](https://docs.microsoft.com/en-us/aspnet/mvc/overview/older-versions-1/controllers-and-routing/asp-net-mvc-routing-overview-cs).
+
+### Router.fs
+
+First I need a top-level-router which will handle all requests to the app. This might route requests to a controller, a pipeline, or another router. In my apps I need a public side, usually the login page, and a private side that only authenticated users can access. To handle this I created both a top-level router, `browserRouter`, and a `loggedInView` router.
+
+*logged-in view router*
+
+```fsharp
+let loggedInView = router {
+    pipe_through login
+    pipe_through protectFromForgery
+    forward "/books" Books.Controller.resource 
+    forward "/dashboard" (fun next ctx -> htmlView (Dashboard.layout ctx) next ctx)
+}
+```
+
+Requests that pass through the `loggedInView` router are checked for authentication status and sent to webauth if not. `pipe_through login` makes this happen like this:
+
+```fsharp
+let login = pipeline {
+    requires_authentication (fun next ctx -> htmlView (Login.layout ctx) next ctx)
+}
+```
+
+The important part is `requires_authentication`. Is a `CustomOperation` `PipelineBuilder` which checks for authentication. In my case, here, if not authenticated, the user will be sent to the login page.
+
+*top-level router*
+
+```fsharp
+let browserRouter = router {
+    not_found_handler (htmlView NotFound.layout) //Use the default 404 webpage
+    pipe_through browser //Use the default browser pipeline
+    forward "" defaultView //Use the default view
+    get "/books" loggedInView
+    get "/login" (fun next ctx -> htmlView (Login.layout ctx) next ctx)
+    get "/logout" (signOut "Cookies" >=> (fun next ctx -> htmlView (Logout.layout ctx) next ctx)) 
+    get "/dashboard" loggedInView 
+    get "/webauth" (fun next ctx -> (isAuthenticated ctx) next ctx)
+}
+```
+
+* `/login` gets the login page but does not do send the user to `webauth`
+* `/logout` sign-out the user (clears auth cookies) and gets the logout page
+* `/webauth` checks if the user has been authenticated and send the user to webauth if not authenticated.
+* `/books` and `/dashboard` are private pages so they go through the `loggedInView` router
+
+## Logged-in view layout template vs. public view layout template
+
+I had a problem with the App level layout. This layout had the login button and the menu and each was toggled based on the app context passed to it. Using the context I would check for authentication status and toggle the login and menu. The problem was that the menu would not get replaced with the login button after logout. In order to deal with this I created two app level layouts.
+
+* App.fs is the public view layout
+* AppAuth.fs is the private view layout
+
+In the public views I plug into the public view layout like this:
+
+```fsharp
+let layout ctx =
+    App.layout (login ctx) ctx
+```
+
+In the private views I plug into the logged-in view layout like this:
+
+```fsharp
+let layout ctx =
+    AuthApp.layout (dashboard ctx) ctx
+```
+
+## Final thoughts
+
+![I'm trying](http://www.memeologist.com/wp-content/uploads/2017/05/25074d69a2658f5d354bc03890b47fd7.jpg?67ef12)
+
+And that is all there is is to it. Working with Saturn was a bit painful at first as I was trying to learn the abstractions and `opinions`, but eventually it all just made a lot of sense and it is pretty easy to work with. Try it out!
