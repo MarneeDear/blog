@@ -229,7 +229,7 @@ let browserRouter = router {
 
 ## Logged-in view layout template vs. public view layout template
 
-I had a problem with the App level layout. This layout had the login button and the menu and each was toggled based on the app context passed to it. Using the context I would check for authentication status and toggle the login and menu. The problem was that the menu would not get replaced with the login button after logout. In order to deal with this I created two app level layouts.
+I had a problem with the App level layout. This layout had the login button and the menu and each was toggled based on the app context passed to it. Using the context I would check for authentication status and toggle the login and menu. The problem was that the menu would not get replaced with the login button after logout. In order to deal with this I created two app level layouts, instead.
 
 * App.fs is the public view layout
 * AppAuth.fs is the private view layout
