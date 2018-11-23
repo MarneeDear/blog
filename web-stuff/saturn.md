@@ -139,7 +139,7 @@ I defined a middleware function in which I enabled [`UseAuthentication`](https:/
     app.UseAuthentication()
 ```
 
-I defined a service function which configures the CAS authentication by following the guide to the [CAS library](https://github.com/iuCrimson/aspnet.security.cas).
+I defined a service function which configures the CAS authentication. I followed the [CAS library](https://github.com/iuCrimson/aspnet.security.cas) guide.
 
 ```fsharp
   let service (s : IServiceCollection) =
@@ -156,7 +156,7 @@ I defined a service function which configures the CAS authentication by followin
     s
 ```
 
-Here I configured the default scheme and gave the Challenge Scheme a name (`CAS`). Later, when I want to do a login, I can have the Giraffe Auth challenge to use `CAS` like this:
+Here I configured the default scheme and gave the Challenge Scheme a name (`CAS`). Later, when I want to do a login, I can have the Giraffe Auth challenge use `CAS` like this:
 
 ```fsharp
   (Giraffe.Auth.challenge "CAS")
