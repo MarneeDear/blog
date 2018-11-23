@@ -222,9 +222,9 @@ let browserRouter = router {
 }
 ```
 
-* `/login` gets the login page but does not do send the user to `webauth`
-* `/logout` sign-out the user (clears auth cookies) and gets the logout page
-* `/webauth` checks if the user has been authenticated and send the user to webauth if not authenticated.
+* `/login` gets the login page but does not send the user to `webauth`
+* `/logout` sign-out the user (clears auth cookies) and get the logout page
+* `/webauth` check if the user has been authenticated and send the user to webauth if not authenticated.
 * `/books` and `/dashboard` are private pages so they go through the `loggedInView` router
 
 ## Logged-in view layout template vs. public view layout template
@@ -247,6 +247,15 @@ In the private views I plug into the logged-in view layout like this:
 let layout ctx =
     AuthApp.layout (dashboard ctx) ctx
 ```
+
+## What's next?
+
+![Moar?](http://www.vitamin-ha.com/wp-content/uploads/2013/05/Now-What-Meme.jpg)
+
+I need to figure out these things:
+
+* What am I going to use for authorization? Do I want to build a sample-app that also uses [ASP.NET Core Identity](https://docs.microsoft.com/en-us/aspnet/core/security/authentication/identity?view=aspnetcore-2.1&tabs=visual-studio)? Maybe I'll roll my own with EDS/Grouper for claims and membership and a simple database to assign roles and privileges, like I have in previous projects.
+* Figure out how to restrict access to controllers and views like I do with the [`Authorize` attribute](https://stackoverflow.com/questions/10848086/authorize-attribute-in-asp-net-mvc#10848142) in .NET MVC or .NET Web API 2.0. I suspect I will have to fig into Giraffe for this.
 
 ## Final thoughts
 
